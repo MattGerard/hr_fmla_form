@@ -1,0 +1,7 @@
+body {
+    background-color: black;
+    color: #fff;
+}
+
+/* Components */
+@import "../components/Nav/style.css";
