@@ -1,5 +1,5 @@
 # webpack2_sass_basic
-Super Simple Webpack 2 Starter Kit with Postcss & cssnext
+FMLA Time off calculator, react, flow.
 
 ### Run Package
 yarn install
