@@ -1,3 +1,22 @@
 // Place your settings in this file to overwrite default and user settings.
 {
+  "workbench.activityBar.visible": false,
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "files.associations": {
+    "Bakefile": "shellscript"
+  },
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "javascript.validate.enable": false,
+  // Format a file on save. A formatter must be available, the file must not be auto-saved, and editor must not be shutting down.
+  "editor.formatOnSave": true,
+  // If true, will use single instead of double quotes
+  "prettier.singleQuote": true,
+  // Fit code within this line limit
+  "prettier.printWidth": 100,
+  // Specifies the folder path containing the tsserver and lib*.d.ts files to use.
+  "typescript.tsdk": "./node_modules/typescript/lib",
+  // Controls the printing of spaces inside object literals
+  "prettier.bracketSpacing": false
 }
