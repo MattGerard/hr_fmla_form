@@ -1,7 +1,8 @@
 body {
-    background-color: black;
-    color: #fff;
+    background-color: white;
+    color: #black;
 }
 
 /* Components */
-@import "../components/Nav/style.css";
+@import "../components/FMLA_CALC/style.css";
+@import "../../node_modules/bulma/css/bulma.css";

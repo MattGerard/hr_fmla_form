@@ -137,6 +137,7 @@ export default class InputFieldOverlay extends Component {
             onChange={this.handleInputChange}
             onFocus={this.handleInputFocus}
             onBlur={this.handleInputBlur}
+            className="input"
           />
           {this.state.showOverlay &&
             <div style={{position: 'relative'}}>
