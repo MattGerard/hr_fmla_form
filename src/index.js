@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './components/Nav';
+import App from './components/FMLA_CALC';
 
 ReactDOM.render(<App />, document.getElementById('app'));
 

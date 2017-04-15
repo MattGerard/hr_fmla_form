@@ -1,3 +1,4 @@
+// @flow
 import React, {Component} from 'react';
 import moment from 'moment';
 import DayPicker from 'react-day-picker';
@@ -11,13 +12,15 @@ const overlayStyle = {
 };
 
 export default class InputFieldOverlay extends Component {
-  constructor(props) {
+  constructor(props: any) {
     super(props);
-    this.handleDayClick = this.handleDayClick.bind(this);
-    this.handleInputChange = this.handleInputChange.bind(this);
-    this.handleInputFocus = this.handleInputFocus.bind(this);
-    this.handleInputBlur = this.handleInputBlur.bind(this);
-    this.handleContainerMouseDown = this.handleContainerMouseDown.bind(this);
+
+    const self: Object = this;
+    self.handleDayClick = this.handleDayClick.bind(this);
+    self.handleInputChange = this.handleInputChange.bind(this);
+    self.handleInputFocus = this.handleInputFocus.bind(this);
+    self.handleInputBlur = this.handleInputBlur.bind(this);
+    self.handleContainerMouseDown = this.handleContainerMouseDown.bind(this);
   }
 
   state = {
@@ -25,9 +28,10 @@ export default class InputFieldOverlay extends Component {
     benefitStartDate: '',
     childBirth: false,
     childBirthKind: 0,
+    stdKind: 0,
     selectedDay: null
   };
-
+  // illness | injury STD Other
   componentWillUnmount() {
     clearTimeout(this.clickTimeout);
   }
@@ -63,44 +67,60 @@ export default class InputFieldOverlay extends Component {
     });
 
     // Force input's focus if blur event was caused by clicking on the calendar
-    if (showOverlay) {
+    if (showOverlay && this.input) {
       this.input.focus();
     }
   }
 
-  handleInputChange(e) {
-    const {value} = e.target;
-    const momentDay = moment(value, 'L', true);
+  handleInputChange = ({target}: SyntheticInputEvent) => {
+    const momentDay = moment(target.value, 'L', true);
     if (momentDay.isValid()) {
       this.setState(
         {
           selectedDay: momentDay.toDate(),
-          benefitStartDate
+          benefitStartDate: ''
         },
         () => {
-          this.daypicker.showMonth(this.state.selectedDay);
+          if (this.daypicker) {
+            this.daypicker.showMonth(this.state.selectedDay);
+          }
         }
       );
     } else {
-      this.setState({benefitStartDate, selectedDay: null});
+      this.setState({benefitStartDate: '', selectedDay: null});
     }
-  }
+  };
 
-  handleDayClick(day) {
+  handleDayClick(day: any) {
+    console.log(day, 'what is day?');
     this.setState({
       benefitStartDate: moment(day).format('L'),
       selectedDay: day,
       showOverlay: false
     });
-    this.input.blur();
+    if (this.input) {
+      this.input.blur();
+    }
   }
 
   render() {
     console.log(this.state, 'state render');
-    const {benefitStartDate, childBirth, childBirthKind} = this.state;
-    let shortTimeDisabilityStart, shortTimeDisabilityEnd;
-    if (benefitStartDate) {
+    const {benefitStartDate, childBirth, childBirthKind, stdKind} = this.state;
+    let shortTimeDisabilityStart, shortTimeDisabilityEnd, fmlaEndDate;
+    if (benefitStartDate && stdKind !== 1) {
       shortTimeDisabilityStart = moment(benefitStartDate).add(14, 'd').format('L');
+      fmlaEndDate = moment(benefitStartDate).add(12, 'w').format('L');
+    } else if (benefitStartDate && stdKind !== 0) {
+      shortTimeDisabilityStart = moment(benefitStartDate).add(7, 'd').format('L');
+      fmlaEndDate = moment(benefitStartDate).add(12, 'w').format('L');
+    }
+
+    if (childBirth && shortTimeDisabilityStart) {
+      if (childBirthKind === 0) {
+        shortTimeDisabilityEnd = moment(shortTimeDisabilityStart).add(4, 'w').format('L');
+      } else {
+        shortTimeDisabilityEnd = moment(shortTimeDisabilityStart).add(6, 'w').format('L');
+      }
     }
 
     return (
@@ -134,19 +154,12 @@ export default class InputFieldOverlay extends Component {
         </div>
 
         <div>FMLA Start date: {benefitStartDate ? benefitStartDate : 'Select Date'}</div>
-
+        <div>FMLA End date: {fmlaEndDate ? fmlaEndDate : 'Select Date'}</div>
+        <hr />
         <div>Child Birth: {childBirth ? 'true' : 'false'}</div>
 
         {childBirth
           ? <div>Child Birth Kind: {childBirthKind === 0 ? 'natural' : 'Cesarean'}</div>
-          : null}
-
-        {shortTimeDisabilityStart
-          ? <div>
-              Short Time Disability Start date:
-              {' '}
-              {shortTimeDisabilityStart ? shortTimeDisabilityStart : null}
-            </div>
           : null}
 
         {benefitStartDate
@@ -169,12 +182,36 @@ export default class InputFieldOverlay extends Component {
                 Natural
               </button>
             </div>
+          : <div className="">
+              <button type="button" onClick={this.doSetGroupValue.bind(this, 'stdKind', 0)}>
+                Illness
+              </button>
+              <button type="button" onClick={this.doSetGroupValue.bind(this, 'stdKind', 1)}>
+                Injury
+              </button>
+            </div>}
+
+        <hr />
+        {shortTimeDisabilityStart
+          ? <div>
+              <div>
+                Short Time Disability Start date:
+                {' '}
+                {shortTimeDisabilityStart ? shortTimeDisabilityStart : null}
+              </div>
+              <div>
+                Short Time Disability End date:
+                {' '}
+                {shortTimeDisabilityEnd ? shortTimeDisabilityEnd : null}
+              </div>
+            </div>
           : null}
+
       </div>
     );
   }
 
-  doSetGroupValue(kind, val) {
+  doSetGroupValue(kind: string, val: number | boolean) {
     console.log(kind, val, 'set Values');
     this.setState({[kind]: val});
   }
